@@ -8,14 +8,15 @@ public class Stats : MonoBehaviour {
     private float dashingSpeed;
     private float jumpSpeed;
 
-    private float health = 100;
+    [SerializeField] private float hitStunLeft = 0.0f;
+    [SerializeField] private float hitStopLeft = 0.0f;
+    [SerializeField] private Vector2 currentKnockBack = new Vector2();
+    [SerializeField] private float prevHitStun = 0.0f;
 
-    // TODO
-    public bool Hittable()
-    {
-        return true;
-    }
+    [SerializeField] private float health = 100;
 
+    private PlayerController pc;
+    
     public void Injure(int damage)
     {
         health -= damage;
@@ -25,9 +26,32 @@ public class Stats : MonoBehaviour {
         }
     }
 
+    public void HitStun(float hitstun)
+    {
+        Debug.Log("setting " + name + "'s hitstun to " + hitstun);
+        hitStunLeft = hitstun;
+    }
+
+    public void HitStop(float hitstop)
+    {
+        hitStopLeft = hitstop;
+    }
+
+    // Set knockback for when hitstun is over
+    public void PrimeKnockBack(Vector2 knockback)
+    {
+        currentKnockBack = knockback;
+    }
+
     private void Die()
     {
         // TODO: Opponent wins
+    }
+
+    public bool Actionable()
+    {
+        //Debug.Log("Actionable: " + (hitStunLeft <= 0 && hitStopLeft <= 0));
+        return (hitStunLeft <= 0 && hitStopLeft <= 0);
     }
 
     public void setWalkingSpeed(float speed)
@@ -62,6 +86,28 @@ public class Stats : MonoBehaviour {
     public float getJumpSpeed()
     {
         return jumpSpeed;
+    }
+
+    private void Start()
+    {
+        pc = GetComponent<PlayerController>();
+    }
+
+    private void Update()
+    {
+        
+        if (hitStunLeft > 0)
+        {
+            prevHitStun = hitStunLeft;
+            hitStunLeft -= Time.deltaTime;
+        }
+        else if (prevHitStun > 0)
+        {
+            pc.KnockBack(currentKnockBack);
+            prevHitStun = 0;
+        }
+            
+        if (hitStopLeft > 0) hitStopLeft -= Time.deltaTime;
     }
 
 }

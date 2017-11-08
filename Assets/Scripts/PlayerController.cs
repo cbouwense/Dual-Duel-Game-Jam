@@ -8,8 +8,7 @@ public class PlayerController : PhysicsObject
 
     [SerializeField] private bool crouching;
     
-    private SpriteRenderer sr;
-    private Stats stats;
+    private HitboxStats hs;
 
     private enum State { idle, dashing, walking, crouching, jumping, air,
                          std_att, air_att, low_att }
@@ -34,8 +33,7 @@ public class PlayerController : PhysicsObject
 
         Application.targetFrameRate = 60;
         
-        sr = GetComponent<SpriteRenderer>();
-        stats = GetComponent<Stats>();
+        hs = GetComponent<HitboxStats>();
 
         stats.setWalkingSpeed(4);
         stats.setDashingSpeed(8);
@@ -44,7 +42,7 @@ public class PlayerController : PhysicsObject
 
     protected override void Update()
     {
-        GamePad.Index index = (name == "Player1" ? GamePad.Index.One: GamePad.Index.Two);
+        GamePad.Index index = (name == "Player (1)" ? GamePad.Index.One: GamePad.Index.Two);
 
         prevLeft = left;
         prevRight = right;
@@ -64,10 +62,12 @@ public class PlayerController : PhysicsObject
         medium_att = GamePad.GetButtonDown(GamePad.Button.Y, index);
         heavy_att = GamePad.GetButtonDown(GamePad.Button.B, index);
 
+        string attackName;
+
         // Reset animations
         resetAnim();
-        
-        if (moveable)
+
+        if (stats.Actionable())
         {
             // Character state machine
             switch (state)
@@ -76,7 +76,8 @@ public class PlayerController : PhysicsObject
                     //Debug.Log(name + "idle");
                     changeAnim("idle");
 
-                    velocityX = 0;
+                    if (prevState != State.idle)
+                        velocityX = 0;
 
                     // Transition logic
                     if (dash)
@@ -87,6 +88,8 @@ public class PlayerController : PhysicsObject
                         newState = State.jumping;
                     else if (down)
                         newState = State.crouching;
+                    else if (!grounded)
+                        newState = State.air;
                     if (light_att || medium_att || heavy_att)
                         newState = State.std_att;
 
@@ -141,8 +144,11 @@ public class PlayerController : PhysicsObject
                     //Debug.Log(name + " crouching");
                     changeAnim("crouching");
 
-                    velocityX = 0;
+                    if (prevState != State.crouching)
+                        velocityX = 0;
 
+                    if (!grounded)
+                        newState = State.air;
                     if (light_att || medium_att || heavy_att)
                         newState = State.low_att;
                     else if (down)
@@ -282,19 +288,19 @@ public class PlayerController : PhysicsObject
 
                     if (prev_light)
                     {
-                        changeAnim("std_light");
-
+                        attackName = "std_light";
                     }
                     else if (prev_medium)
                     {
-                        changeAnim("std_medium");
-
+                        attackName = "std_medium";
                     }
-                    else if (prev_heavy)
+                    else
                     {
-                        changeAnim("std_heavy");
-
+                        attackName = "std_heavy";
                     }
+
+                    changeAnim(attackName);
+                    hs.setStats(attackName);
 
                     if (grounded)
                         newState = State.idle;
@@ -308,19 +314,19 @@ public class PlayerController : PhysicsObject
 
                     if (prev_light)
                     {
-                        changeAnim("low_light");
-
+                        attackName = "low_light";
                     }
                     else if (prev_medium)
                     {
-                        changeAnim("low_medium");
-
+                        attackName = "low_medium";
                     }
-                    else if (prev_heavy)
+                    else
                     {
-                        changeAnim("low_heavy");
-
+                        attackName = "low_heavy";
                     }
+
+                    changeAnim(attackName);
+                    hs.setStats(attackName);
 
                     if (grounded)
                         newState = State.idle;
@@ -334,19 +340,19 @@ public class PlayerController : PhysicsObject
 
                     if (prev_light)
                     {
-                        changeAnim("air_light");
-
+                        attackName = "air_light";
                     }
                     else if (prev_medium)
                     {
-                        changeAnim("air_medium");
-
+                        attackName = "air_medium";
                     }
-                    else if (prev_heavy)
+                    else
                     {
-                        changeAnim("air_heavy");
-
+                        attackName = "air_heavy";
                     }
+
+                    changeAnim(attackName);
+                    hs.setStats(attackName);
 
                     if (grounded)
                         newState = State.idle;
@@ -378,8 +384,7 @@ public class PlayerController : PhysicsObject
 
     protected override void ComputeVelocity()
     {
-
-        if (moveable)
+        if (stats.Actionable())
         {
             
             // Crouching
@@ -399,7 +404,26 @@ public class PlayerController : PhysicsObject
             }
 
         }
+        else
+        {
+            velocity = new Vector2(0, 0);
+        }
 
+    }
+
+    public void KnockBack(Vector2 knockback)
+    {
+        Debug.Log("Knockback called with " + knockback);
+        if (transform.localScale.x < 0)
+        {
+            velocityX = knockback.x;
+            velocity.y = knockback.y;
+        }
+        else
+        {
+            velocityX = -knockback.x;
+            velocity.y = knockback.y;
+        }
     }
 
     private void changeAnim(string state)

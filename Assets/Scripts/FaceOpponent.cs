@@ -5,13 +5,11 @@ using UnityEngine;
 public class FaceOpponent : MonoBehaviour {
     
     GameObject opp;
-    SpriteRenderer sr;
     
 	void Start () {
 
-        string oppName = (name == "Player1" ? "Player2" : "Player1");
+        string oppName = (name == "Player (1)" ? "Player (2)" : "Player (1)");
         opp = GameObject.Find(oppName);
-        sr = GetComponent<SpriteRenderer>();
 
     }
 	

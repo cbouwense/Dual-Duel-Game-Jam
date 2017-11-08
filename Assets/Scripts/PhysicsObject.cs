@@ -7,8 +7,10 @@ using UnityEngine;
 public class PhysicsObject : MonoBehaviour
 {
 
-    public float minGroundNormalY = 0.65f;
-    public float gravityModifier = 2f;
+    [SerializeField] protected float minGroundNormalY = 0.65f;
+    [SerializeField] protected float gravityModifier = 2f;
+
+    protected Stats stats;
 
     public bool grounded, wasGrounded, moveable;
     protected Vector2 groundNormal;
@@ -30,7 +32,8 @@ public class PhysicsObject : MonoBehaviour
         contactFilter.useTriggers = false;
         // Use layer that object is on
         contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
-        
+
+        stats = GetComponent<Stats>();
         rb2d = GetComponent<Rigidbody2D>();
 
         moveable = true;
@@ -50,20 +53,20 @@ public class PhysicsObject : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
-        velocity.x = velocityX;
-
-        wasGrounded = grounded;
-        grounded = false;
-
-        Vector2 deltaPosition = velocity * Time.deltaTime;
-
-        Vector2 moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
-
-        Vector2 move;
-
-        if (moveable)
+        if (stats.Actionable())
         {
+            velocity += gravityModifier * Physics2D.gravity * Time.deltaTime;
+            velocity.x = velocityX;
+
+            wasGrounded = grounded;
+            grounded = false;
+
+            Vector2 deltaPosition = velocity * Time.deltaTime;
+
+            Vector2 moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
+
+            Vector2 move;
+            
             move = moveAlongGround * deltaPosition.x;
             Movement(move, 'x');
 

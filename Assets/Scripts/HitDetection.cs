@@ -9,19 +9,28 @@ public class HitDetection : MonoBehaviour
 
     void Start()
     {
-        string oppName = (name == "Player1" ? "Player2" : "Player1");
+        string oppName = (name == "Player (1)" ? "Player (2)" : "Player (1)");
         opp = GameObject.Find(oppName);
     }
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        Debug.Log(col.transform.root.GetComponent<Stats>().Hittable());
-        if (col.gameObject.tag == "Hurtbox" && col.transform.root.GetComponent<Stats>().Hittable())
+        if (col.gameObject.tag == "Hurtbox")
         {
-            int damage = GetComponent<HitboxStats>().getDamage();
+            Stats myStats = transform.root.GetComponent<Stats>();
+            Stats oppStats = col.transform.root.GetComponent<Stats>();
+            HitboxStats hStats = transform.root.GetComponent<HitboxStats>();
+
+            int damage = hStats.getDamage();
+            float hitstun = hStats.getHitStun();
+            float hitstop = hStats.getHitStop();
+            Vector2 knockback = hStats.getKnockBack();
+            
             Debug.Log("hit " + opp.name);
-            Debug.Log("sending " + damage + " damage");
-            col.transform.root.GetComponent<Stats>().Injure(damage);
+            oppStats.Injure(damage);
+            oppStats.HitStun(hitstun);
+            myStats.HitStop(hitstop);
+            oppStats.PrimeKnockBack(knockback);
         }
     }
 
