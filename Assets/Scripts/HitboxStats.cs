@@ -35,7 +35,7 @@ public class HitboxStats : MonoBehaviour {
     private float low_heavy_hitstop = 0.250f;
 
     private Vector2 std_light_knockback = new Vector2(2, 4);
-    private Vector2 std_medium_knockback = new Vector2(2, 4);
+    private Vector2 std_medium_knockback = new Vector2(2, 8);
     private Vector2 std_heavy_knockback = new Vector2(2, 4);
     private Vector2 air_light_knockback = new Vector2(2, 4);
     private Vector2 air_medium_knockback = new Vector2(2, 4);

@@ -69,18 +69,20 @@ public class PlayerController : PhysicsObject
 
         if (stats.Actionable())
         {
+            Debug.Log(name + ": " + state);
             // Character state machine
             switch (state)
             {
                 case State.idle:
-                    //Debug.Log(name + "idle");
                     changeAnim("idle");
 
                     if (prevState != State.idle)
                         velocityX = 0;
 
                     // Transition logic
-                    if (dash)
+                    if (!grounded)
+                        newState = State.air;
+                    else if (dash)
                         newState = State.dashing;
                     else if (right || left)
                         newState = State.walking;
@@ -88,15 +90,13 @@ public class PlayerController : PhysicsObject
                         newState = State.jumping;
                     else if (down)
                         newState = State.crouching;
-                    else if (!grounded)
-                        newState = State.air;
+                    
                     if (light_att || medium_att || heavy_att)
                         newState = State.std_att;
 
                     break;
 
                 case State.walking:
-                    //Debug.Log(name + " walking");
 
                     // Animation logic and setting speed
                     if (right)
@@ -141,7 +141,6 @@ public class PlayerController : PhysicsObject
                     break;
 
                 case State.crouching:
-                    //Debug.Log(name + " crouching");
                     changeAnim("crouching");
 
                     if (prevState != State.crouching)
@@ -159,7 +158,6 @@ public class PlayerController : PhysicsObject
                     break;
 
                 case State.jumping:
-                    //Debug.Log(name + " jumping");
                     changeAnim("jumping");
 
                     if (prevState != State.jumping)
@@ -176,17 +174,17 @@ public class PlayerController : PhysicsObject
                     break;
 
                 case State.air:
-                    //Debug.Log(name + " air");
                     changeAnim("air");
 
                     // If we just landed
                     if (!wasGrounded && grounded)
                     {
+                        Debug.Log("Made it in here");
                         if (left || right)
                             newState = State.walking;
                         else
                             newState = State.idle;
-                            
+                        Debug.Log("changed state to " + newState);
                     }
                     else
                     {
@@ -197,11 +195,10 @@ public class PlayerController : PhysicsObject
                         else
                             newState = State.air;
                     }
-                    
+
                     break;
 
                 case State.dashing:
-                    //Debug.Log(name + " dashing");
 
                     // Store which way we're dashing for later, and start dash timer
                     if (prevState != State.dashing)
@@ -310,7 +307,6 @@ public class PlayerController : PhysicsObject
                     break;
 
                 case State.low_att:
-                    //Debug.Log(name + " std_heavy");
 
                     if (prev_light)
                     {
@@ -336,7 +332,6 @@ public class PlayerController : PhysicsObject
                     break;
 
                 case State.air_att:
-                    //Debug.Log(name + " std_heavy");
 
                     if (prev_light)
                     {
@@ -424,6 +419,7 @@ public class PlayerController : PhysicsObject
             velocityX = -knockback.x;
             velocity.y = knockback.y;
         }
+
     }
 
     private void changeAnim(string state)
