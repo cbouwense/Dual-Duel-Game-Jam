@@ -14,11 +14,11 @@ public class PlayerController : PhysicsObject
                          std_att, air_att, low_att }
     private State newState = State.idle;
     private State prevState = State.idle;
-    private State state = State.idle;
+    [SerializeField] private State state = State.idle;
 
-    private bool left, right, jump, down, dash, changeStance,
+    public bool left, right, jump, down, dash, changeStance,
                  prevLeft, prevRight, light_att, medium_att, heavy_att,
-                 prev_light, prev_medium, prev_heavy;
+                 prev_light, prev_medium, prev_heavy, std_block, low_block;
 
     private float dashTimer = 0;
     private float jumpTimer = 0;
@@ -36,7 +36,7 @@ public class PlayerController : PhysicsObject
         hs = GetComponent<HitboxStats>();
 
         stats.setWalkingSpeed(4);
-        stats.setDashingSpeed(8);
+        stats.setDashingSpeed(10);
         stats.setJumpSpeed(10);
     }
 
@@ -65,16 +65,19 @@ public class PlayerController : PhysicsObject
         string attackName;
 
         // Reset animations
-        resetAnim();
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("standing_hitstun"))
+            resetAnim();
 
         if (stats.Actionable())
         {
-            Debug.Log(name + ": " + state);
+            //Debug.Log(name + ": " + state, this);
             // Character state machine
             switch (state)
             {
                 case State.idle:
                     changeAnim("idle");
+
+                    //Debug.Break();
 
                     if (prevState != State.idle)
                         velocityX = 0;
@@ -123,7 +126,7 @@ public class PlayerController : PhysicsObject
                         }
                         velocityX = stats.getWalkingSpeed("left");
                     }
-
+                    
                     // Transition logic
                     if (dash)
                         newState = State.dashing;
@@ -179,12 +182,14 @@ public class PlayerController : PhysicsObject
                     // If we just landed
                     if (!wasGrounded && grounded)
                     {
-                        Debug.Log("Made it in here");
                         if (left || right)
+                        {
                             newState = State.walking;
+                        } 
                         else
+                        {
                             newState = State.idle;
-                        Debug.Log("changed state to " + newState);
+                        } 
                     }
                     else
                     {
@@ -220,7 +225,6 @@ public class PlayerController : PhysicsObject
                         {
                             dashingLeft = true;
                         }
-                        if (name == "Player2") //Debug.Log("started dash timer");
                         dashTimer = 0.2f;
                     }
                     // If the dashing timer has finished
@@ -375,6 +379,9 @@ public class PlayerController : PhysicsObject
         else if (right && dashRightInputFrames <= 0)
             dashRightInputFrames = dashInputFrames;
 
+        std_block = false;
+        low_block = false;
+
     }
 
     protected override void ComputeVelocity()
@@ -408,7 +415,6 @@ public class PlayerController : PhysicsObject
 
     public void KnockBack(Vector2 knockback)
     {
-        Debug.Log("Knockback called with " + knockback);
         if (transform.localScale.x < 0)
         {
             velocityX = knockback.x;
@@ -419,7 +425,7 @@ public class PlayerController : PhysicsObject
             velocityX = -knockback.x;
             velocity.y = knockback.y;
         }
-
+        anim.SetBool("hit", false);
     }
 
     private void changeAnim(string state)
@@ -427,6 +433,7 @@ public class PlayerController : PhysicsObject
         string[] states = {"idle", "dash forward", "dash backward",
                            "walk forward", "walk backward",
                            "crouching", "jumping", "air",
+                           "std_block", "low_block",
                            "std_light", "std_medium", "std_heavy",
                            "air_light", "air_medium", "air_heavy"};
         for (int i = 0; i < states.Length; i++)
@@ -443,6 +450,7 @@ public class PlayerController : PhysicsObject
         string[] states = {"idle", "dash forward", "dash backward",
                            "walk forward", "walk backward",
                            "crouching", "jumping", "air",
+                           "std_block", "low_block",
                            "std_light", "std_medium", "std_heavy",
                            "air_light", "air_medium", "air_heavy"};
         for (int i = 0; i < states.Length; i++)

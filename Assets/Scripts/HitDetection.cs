@@ -21,16 +21,28 @@ public class HitDetection : MonoBehaviour
             Stats oppStats = col.transform.root.GetComponent<Stats>();
             HitboxStats hStats = transform.root.GetComponent<HitboxStats>();
 
+            string attackName = hStats.getName();
             int damage = hStats.getDamage();
             float hitstun = hStats.getHitStun();
             float hitstop = hStats.getHitStop();
             Vector2 knockback = hStats.getKnockBack();
+            Vector2 pushback = hStats.getPushBack();
             
             Debug.Log("hit " + opp.name);
-            oppStats.Injure(damage);
-            oppStats.HitStun(hitstun);
+            if (oppStats.isBlocking(attackName))
+            {
+                oppStats.Injure(damage / 5);
+                oppStats.HitStun(0.1f, false);
+                oppStats.PrimeKnockBack(new Vector2(1, 0));
+            }
+            else
+            {
+                oppStats.Injure(damage);
+                oppStats.HitStun(hitstun, true);
+                oppStats.PrimeKnockBack(knockback);
+            }
             myStats.HitStop(hitstop);
-            oppStats.PrimeKnockBack(knockback);
+            myStats.PrimeKnockBack(pushback);
         }
     }
 

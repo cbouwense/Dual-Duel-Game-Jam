@@ -12,11 +12,16 @@ public class Stats : MonoBehaviour {
     [SerializeField] private float hitStopLeft = 0.0f;
     [SerializeField] private Vector2 currentKnockBack = new Vector2();
     [SerializeField] private float prevHitStun = 0.0f;
+    [SerializeField] private float prevHitStop = 0.0f;
 
-    [SerializeField] private float health = 100;
+    [SerializeField] private float health = 300;
 
+    private Transform block;
     private PlayerController pc;
-    
+    private Animator anim;
+    private RoomController rc;
+    private SpriteRenderer sr;
+
     public void Injure(int damage)
     {
         health -= damage;
@@ -26,8 +31,10 @@ public class Stats : MonoBehaviour {
         }
     }
 
-    public void HitStun(float hitstun)
+    public void HitStun(float hitstun, bool playAnim)
     {
+        if (playAnim)
+            anim.SetBool("hit", true);
         Debug.Log("setting " + name + "'s hitstun to " + hitstun);
         hitStunLeft = hitstun;
     }
@@ -35,6 +42,45 @@ public class Stats : MonoBehaviour {
     public void HitStop(float hitstop)
     {
         hitStopLeft = hitstop;
+    }
+
+    public bool isBlocking(string attack)
+    {
+        Debug.Log("Checking against " + attack);
+        if (attack == "std_light" || attack == "std_medium" || attack == "std_heavy" ||
+            attack == "air_light" || attack == "air_medium" || attack == "air_heavy")
+        {
+            Debug.Log("made it into top if");
+            // If we are walking backwards
+            if ((transform.localScale.x < 0 && pc.right) ||
+                (transform.localScale.x > 0 && pc.left))
+            {
+                Debug.Log("was blocking");
+                sr.enabled = true;
+                return true;
+            }
+            else
+            {
+                Debug.Log("was not blocking");
+                return false;
+            }
+        }
+        else
+        {
+            Debug.Log("made it into bottom if");
+            if ((transform.localScale.x < 0 && pc.down && pc.right) ||
+                (transform.localScale.x > 0 && pc.down && pc.left))
+            {
+                Debug.Log("was blocking");
+                //changeAnim("low_block");
+                return true;
+            }
+            else
+            {
+                Debug.Log("was not blocking");
+                return false;
+            }
+        }
     }
 
     // Set knockback for when hitstun is over
@@ -45,7 +91,8 @@ public class Stats : MonoBehaviour {
 
     private void Die()
     {
-        // TODO: Opponent wins
+        string oppName = (name == "Player (1)" ? "Player (2)" : "Player (1)");
+        rc.Winrar(oppName);
     }
 
     public bool Actionable()
@@ -65,6 +112,10 @@ public class Stats : MonoBehaviour {
     public void setJumpSpeed(float speed)
     {
         jumpSpeed = speed;
+    }
+    public void setHealth(float hp)
+    {
+        health = hp;
     }
 
     public float getWalkingSpeed(string dir)
@@ -90,12 +141,17 @@ public class Stats : MonoBehaviour {
 
     private void Start()
     {
+        GameObject roomManager = GameObject.Find("RoomManager");
+        block = transform.GetChild(0);
+        rc = roomManager.GetComponent<RoomController>();
         pc = GetComponent<PlayerController>();
+        anim = GetComponent<Animator>();
+        sr = block.GetComponent<SpriteRenderer>();
     }
 
     private void Update()
     {
-        
+
         if (hitStunLeft > 0)
         {
             prevHitStun = hitStunLeft;
@@ -106,8 +162,35 @@ public class Stats : MonoBehaviour {
             pc.KnockBack(currentKnockBack);
             prevHitStun = 0;
         }
-            
-        if (hitStopLeft > 0) hitStopLeft -= Time.deltaTime;
+
+        if (hitStopLeft > 0)
+        {
+            prevHitStop = hitStopLeft;
+            hitStopLeft -= Time.deltaTime;
+        }
+        else if (prevHitStop > 0)
+        {
+            pc.KnockBack(currentKnockBack);
+            prevHitStop = 0;
+        }
+    }
+
+    private void changeAnim(string state)
+    {
+        string[] states = {"idle", "dash forward", "dash backward",
+                           "walk forward", "walk backward",
+                           "crouching", "jumping", "air",
+                           "std_block", "low_block",
+                           "std_light", "std_medium", "std_heavy",
+                           "air_light", "air_medium", "air_heavy"};
+        for (int i = 0; i < states.Length; i++)
+        {
+            if (state == states[i])
+            {
+                anim.SetBool(states[i], true);
+            }
+        }
     }
 
 }
+
