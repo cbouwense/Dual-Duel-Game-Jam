@@ -66,14 +66,9 @@ public class RoomController : MonoBehaviour
 
                 if (someoneWon)
                 {
-                    if (winCount[0] == 2 || winCount[1] == 2)
-                        state = RoomState.postMatch;
-                    else
-                    {
-                        resetPlayers();
-                        state = RoomState.postRound;
-                        roundCount++;
-                    }
+                    resetPlayers();
+                    state = RoomState.postRound;
+                    roundCount++;
                 }
 
                 break;
