@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class RoomController : MonoBehaviour
 {
 
-    private enum RoomState { preRound, round, postRound, postMatch, pause }
-    [SerializeField] private RoomState state = RoomState.preRound;
+    public enum RoomState { preRound, round, postRound, postMatch, pause }
+    public RoomState state = RoomState.preRound;
     [SerializeField] private float countdownTimer = 5.0f;
     [SerializeField] private float postRoundTimer = 2.0f;
 
@@ -80,7 +80,7 @@ public class RoomController : MonoBehaviour
 
                 if (postRoundTimer > 0)
                 {
-                    timerText.text = winnerName + " won Round " + (roundCount - 1) + "!";
+                    timerText.text = winnerName + " won!";
                     postRoundTimer -= Time.deltaTime;
                 }  
                 else
@@ -94,11 +94,11 @@ public class RoomController : MonoBehaviour
 
             case RoomState.postMatch:
 
-                // Zoom in on the winner
-
                 // Display that he won
+                timerText.text = winnerName + " won!";
 
                 // Dipsplay buttons for "Rematch" or "Menu"
+
 
                 break;
 

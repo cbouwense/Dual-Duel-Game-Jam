@@ -9,6 +9,7 @@ public class PlayerController : PhysicsObject
     [SerializeField] private bool crouching;
     private GameObject opp;
     private HitboxStats hs;
+    private RoomController rc;
 
     private enum State { idle, dashing, walking, crouching, jumping, air,
                          std_att, air_att, low_att }
@@ -37,6 +38,7 @@ public class PlayerController : PhysicsObject
         Application.targetFrameRate = 60;
         
         hs = GetComponent<HitboxStats>();
+        rc = GameObject.Find("RoomManager").GetComponent<RoomController>();
 
         stats.setWalkingSpeed(4);
         stats.setDashingSpeed(10);
@@ -71,7 +73,8 @@ public class PlayerController : PhysicsObject
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("standing_hitstun"))
             resetAnim();
 
-        if (stats.Actionable())
+        Debug.Log("state: " + rc.state);
+        if (stats.Actionable() && rc.state == RoomController.RoomState.round)
         {
             //Debug.Log(name + ": " + state, this);
             // Character state machine
