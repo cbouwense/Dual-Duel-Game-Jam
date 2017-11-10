@@ -35,7 +35,7 @@ public class Stats : MonoBehaviour {
     {
         if (playAnim)
             anim.SetBool("hit", true);
-        Debug.Log("setting " + name + "'s hitstun to " + hitstun);
+        //Debug.Log("setting " + name + "'s hitstun to " + hitstun);
         hitStunLeft = hitstun;
     }
 
@@ -46,13 +46,13 @@ public class Stats : MonoBehaviour {
 
     public bool isBlocking(string attack)
     {
-        Debug.Log("Checking against " + attack);
+        //Debug.Log("Checking against " + attack);
         if (attack == "std_light" || attack == "std_medium" || attack == "std_heavy" ||
             attack == "air_light" || attack == "air_medium" || attack == "air_heavy")
         {
             // If we are walking backwards
-            if ((transform.localScale.x < 0 && pc.right) ||
-                (transform.localScale.x > 0 && pc.left))
+            if ((transform.localScale.x < 0 && pc.right && !pc.down) ||
+                (transform.localScale.x > 0 && pc.left && !pc.down))
             {
                 sr.enabled = true;
                 return true;

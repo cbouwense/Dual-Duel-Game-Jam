@@ -11,7 +11,7 @@ public class RoomController : MonoBehaviour
     [SerializeField] private float countdownTimer = 5.0f;
     [SerializeField] private float postRoundTimer = 2.0f;
 
-    public Text timerText;
+    public Text timerText, announceText;
 
     private int[] winCount = { 0, 0 };
 
@@ -34,7 +34,8 @@ public class RoomController : MonoBehaviour
 
                 if (countdownTimer > 4)
                 {
-                    timerText.text = "Round " + roundCount;
+                    announceText.text = "Round " + roundCount;
+                    timerText.text = "";
                     countdownTimer -= Time.deltaTime;
                 }
                 else if (countdownTimer > 1)
@@ -67,9 +68,12 @@ public class RoomController : MonoBehaviour
                 {
                     if (winCount[0] == 2 || winCount[1] == 2)
                         state = RoomState.postMatch;
-                    resetPlayers();
-                    state = RoomState.postRound;
-                    roundCount++;
+                    else
+                    {
+                        resetPlayers();
+                        state = RoomState.postRound;
+                        roundCount++;
+                    }
                 }
 
                 break;
@@ -80,7 +84,8 @@ public class RoomController : MonoBehaviour
 
                 if (postRoundTimer > 0)
                 {
-                    timerText.text = winnerName + " won!";
+                    timerText.text = "";
+                    announceText.text = winnerName + " won!";
                     postRoundTimer -= Time.deltaTime;
                 }  
                 else
@@ -95,7 +100,7 @@ public class RoomController : MonoBehaviour
             case RoomState.postMatch:
 
                 // Display that he won
-                timerText.text = winnerName + " won!";
+                announceText.text = winnerName + " won!";
 
                 // Dipsplay buttons for "Rematch" or "Menu"
 
@@ -108,6 +113,7 @@ public class RoomController : MonoBehaviour
 
     public void Winrar(string name)
     {
+        Debug.Log("IN WINRAR");
         someoneWon = true;
         winnerName = name;
         if (name == "Player (1)")
@@ -120,8 +126,13 @@ public class RoomController : MonoBehaviour
     {
         GameObject p1 = GameObject.Find("Player (1)");
         GameObject p2 = GameObject.Find("Player (2)");
+        PlayerController p1C = p1.GetComponent<PlayerController>();
+        PlayerController p2C = p1.GetComponent<PlayerController>();
         Stats p1Stats = p1.GetComponent<Stats>();
         Stats p2Stats = p2.GetComponent<Stats>();
+
+        p1C.velocity = new Vector2(0, 0);
+        p2C.velocity = new Vector2(0, 0);
 
         p1.transform.position = new Vector2(-7, -3.106f);
         p2.transform.position = new Vector2(7, -3.106f);

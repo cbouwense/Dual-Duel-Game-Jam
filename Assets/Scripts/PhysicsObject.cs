@@ -71,6 +71,8 @@ public class PhysicsObject : MonoBehaviour
             Movement(move, 'x');
 
             move = Vector2.up * deltaPosition.y;
+
+            
             Movement(move, 'y');
         }
 
@@ -126,8 +128,8 @@ public class PhysicsObject : MonoBehaviour
                 }
             }
         }
-
-        rb2d.position += move.normalized * distance;
+        if (distance != -0.01f)
+            rb2d.position += move.normalized * distance;
 
     }
 }

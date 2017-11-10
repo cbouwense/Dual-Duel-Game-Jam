@@ -14,13 +14,17 @@ public class FaceOpponent : MonoBehaviour {
     }
 	
 	void Update () {
-		
+
         // If your opponent is on your left
-        if (opp.transform.position.x < transform.position.x)
+        
+        if (opp.transform.position.x < transform.position.x && 
+            transform.position.x < 8.5)
         {
+            Debug.Log("opponent was on left and my x was " + transform.position.x);
             transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
         }
-        else
+        else if (opp.transform.position.x > transform.position.x &&
+                 transform.position.x > -8.5)
         {
             transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
         }

@@ -10,6 +10,7 @@ public class PlayerController : PhysicsObject
     private GameObject opp;
     private HitboxStats hs;
     private RoomController rc;
+    private BoxCollider2D bc;
 
     private enum State { idle, dashing, walking, crouching, jumping, air,
                          std_att, air_att, low_att }
@@ -39,6 +40,7 @@ public class PlayerController : PhysicsObject
         
         hs = GetComponent<HitboxStats>();
         rc = GameObject.Find("RoomManager").GetComponent<RoomController>();
+        bc = GetComponent<BoxCollider2D>();
 
         stats.setWalkingSpeed(4);
         stats.setDashingSpeed(10);
@@ -49,6 +51,16 @@ public class PlayerController : PhysicsObject
     {
         GamePad.Index index = (name == "Player (1)" ? GamePad.Index.One: GamePad.Index.Two);
 
+        /*
+        if (!grounded)
+        {
+            bc.isTrigger = true;
+        }
+        else
+        {
+            bc.isTrigger = false;
+        }
+        */
         prevLeft = left;
         prevRight = right;
         prev_light = light_att;
@@ -73,7 +85,7 @@ public class PlayerController : PhysicsObject
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("standing_hitstun"))
             resetAnim();
 
-        Debug.Log("state: " + rc.state);
+        //Debug.Log("state: " + rc.state);
         if (stats.Actionable() && rc.state == RoomController.RoomState.round)
         {
             //Debug.Log(name + ": " + state, this);
@@ -441,7 +453,8 @@ public class PlayerController : PhysicsObject
                            "crouching", "jumping", "air",
                            "std_block", "low_block",
                            "std_light", "std_medium", "std_heavy",
-                           "air_light", "air_medium", "air_heavy"};
+                           "air_light", "air_medium", "air_heavy",
+                           "low_light", "low_medium", "low_heavy"};
         for (int i = 0; i < states.Length; i++)
         {
             if (state == states[i])
@@ -458,7 +471,8 @@ public class PlayerController : PhysicsObject
                            "crouching", "jumping", "air",
                            "std_block", "low_block",
                            "std_light", "std_medium", "std_heavy",
-                           "air_light", "air_medium", "air_heavy"};
+                           "air_light", "air_medium", "air_heavy",
+                           "low_light", "low_medium", "low_heavy"};
         for (int i = 0; i < states.Length; i++)
         {
             anim.SetBool(states[i], false);

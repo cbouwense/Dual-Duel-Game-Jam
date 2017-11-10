@@ -29,7 +29,7 @@ public class HitDetection : MonoBehaviour
             Vector2 knockback = hStats.getKnockBack();
             Vector2 pushback = hStats.getPushBack();
             
-            Debug.Log("hit " + opp.name);
+            //Debug.Log("hit " + opp.name);
             if (oppStats.isBlocking(attackName))
             {
                 oppStats.Injure(damage / 5);
