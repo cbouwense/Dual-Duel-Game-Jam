@@ -6,6 +6,7 @@ public class HitDetection : MonoBehaviour
 {
 
     GameObject opp;
+    //Transform origTrans;
 
     void Start()
     {

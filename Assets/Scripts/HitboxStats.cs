@@ -16,15 +16,15 @@ public class HitboxStats : MonoBehaviour {
     private int low_medium_dmg = 4;
     private int low_heavy_dmg = 5;
 
-    private float std_light_hitstun = 0.167f;
-    private float std_medium_hitstun = 0.233f;
-    private float std_heavy_hitstun = 0.317f;
-    private float air_light_hitstun = 0.167f;
-    private float air_medium_hitstun = 0.233f;
-    private float air_heavy_hitstun = 0.317f;
-    private float low_light_hitstun = 0.167f;
-    private float low_medium_hitstun = 0.233f;
-    private float low_heavy_hitstun = 0.317f;
+    private float std_light_hitstun = 0.167f * 2;
+    private float std_medium_hitstun = 0.233f * 2;
+    private float std_heavy_hitstun = 0.317f * 2;
+    private float air_light_hitstun = 0.167f * 2;
+    private float air_medium_hitstun = 0.233f * 2;
+    private float air_heavy_hitstun = 0.317f * 2;
+    private float low_light_hitstun = 0.167f * 2;
+    private float low_medium_hitstun = 0.233f * 2;
+    private float low_heavy_hitstun = 0.317f * 2;
 
     private float std_light_hitstop = 0.183f;
     private float std_medium_hitstop = 0.217f;

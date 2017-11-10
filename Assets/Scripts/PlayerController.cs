@@ -7,7 +7,7 @@ public class PlayerController : PhysicsObject
 {
 
     [SerializeField] private bool crouching;
-    
+    private GameObject opp;
     private HitboxStats hs;
 
     private enum State { idle, dashing, walking, crouching, jumping, air,
@@ -30,6 +30,9 @@ public class PlayerController : PhysicsObject
     protected override void Start()
     {
         base.Start();
+
+        string oppName = (name == "Player (1)" ? "Player (2)" : "Player (1)");
+        opp = GameObject.Find(oppName);
 
         Application.targetFrameRate = 60;
         
