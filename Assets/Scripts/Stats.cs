@@ -50,34 +50,28 @@ public class Stats : MonoBehaviour {
         if (attack == "std_light" || attack == "std_medium" || attack == "std_heavy" ||
             attack == "air_light" || attack == "air_medium" || attack == "air_heavy")
         {
-            Debug.Log("made it into top if");
             // If we are walking backwards
             if ((transform.localScale.x < 0 && pc.right) ||
                 (transform.localScale.x > 0 && pc.left))
             {
-                Debug.Log("was blocking");
                 sr.enabled = true;
                 return true;
             }
             else
             {
-                Debug.Log("was not blocking");
                 return false;
             }
         }
         else
         {
-            Debug.Log("made it into bottom if");
             if ((transform.localScale.x < 0 && pc.down && pc.right) ||
                 (transform.localScale.x > 0 && pc.down && pc.left))
             {
-                Debug.Log("was blocking");
                 //changeAnim("low_block");
                 return true;
             }
             else
             {
-                Debug.Log("was not blocking");
                 return false;
             }
         }
